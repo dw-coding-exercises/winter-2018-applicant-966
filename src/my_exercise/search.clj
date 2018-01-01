@@ -1,5 +1,6 @@
 (ns my-exercise.search
-  (:require [hiccup.page :refer [html5]]))
+  (:require [hiccup.page :refer [html5]]
+            [my-exercise.ocd :as ocd]))
 
 (defn header [_]
   [:head
@@ -14,6 +15,19 @@
    [:a {:href "/"} "Home"]
    [:h1 "Your next election"]])
 
+(defn parse-data [request]
+  (def params (request :params))
+  (def street (params :street))
+  (def city (params :city))
+  (def state (params :state))
+  (def zip (params :zip))
+  (zipmap [:street :city :state :zip] [street city state zip]))
+
+(defn get-result [request]
+  (def data (parse-data request))
+  (def identifiers (ocd/parse-identifiers data))
+  (print identifiers))
+
 (defn results [request]
   [:div {:class "results"}
    [:ul
@@ -26,4 +40,5 @@
   (html5
    (header request)
    (heading request)
+   (get-result request)
    (results request)))
